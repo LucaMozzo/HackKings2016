@@ -7,140 +7,287 @@
   <script src="lib/leap-widgets-0.1.0.js"></script>
   <script src="lib/OrbitControls.js"></script>
   <script src="lib/audiosynth.js"></script>
+  <script src="lib/leap.rigged-hand-0.1.7.min.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <script src="assets/js/jquery.min.js"></script>
+      <script src="assets/js/skel.min.js"></script>
+      <script src="assets/js/util.js"></script>
+      <script src="assets/js/main.js"></script>
 
 </head>
 <body>
 
+<div id="startMenu">
+  <!-- Wrapper -->
+      <div id="wrapper">
+
+        <!-- Header -->
+          <header id="header">
+            <div class="logo">
+              <span class="icon fa-hand-spock-o"></span>
+            </div>
+            <div class="content">
+              <div class="inner">
+                <h1>Piano Hero</h1>
+              </div>
+            </div>
+            <nav>
+              <ul>
+                <li><a href="#" onclick="init()">PLAY</a></li>
+              </ul>
+            </nav>
+          </header>
+
+        <!-- Main -->
+          <div id="main">
+
+            <!-- Intro -->
+              <article id="intro">
+                <h2 class="major">Intro</h2>
+                <span class="image main"><img src="images/pic01.jpg" alt="" /></span>
+                <p>Aenean ornare velit lacus, ac varius enim ullamcorper eu. Proin aliquam facilisis ante interdum congue. Integer mollis, nisl amet convallis, porttitor magna ullamcorper, amet egestas mauris. Ut magna finibus nisi nec lacinia. Nam maximus erat id euismod egestas. By the way, check out my <a href="#work">awesome work</a>.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dapibus rutrum facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam tristique libero eu nibh porttitor fermentum. Nullam venenatis erat id vehicula viverra. Nunc ultrices eros ut ultricies condimentum. Mauris risus lacus, blandit sit amet venenatis non, bibendum vitae dolor. Nunc lorem mauris, fringilla in aliquam at, euismod in lectus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In non lorem sit amet elit placerat maximus. Pellentesque aliquam maximus risus, vel sed vehicula.</p>
+              </article>
+
+            <!-- Work -->
+              <article id="work">
+                <h2 class="major">Work</h2>
+                <span class="image main"><img src="images/pic02.jpg" alt="" /></span>
+                <p>Adipiscing magna sed dolor elit. Praesent eleifend dignissim arcu, at eleifend sapien imperdiet ac. Aliquam erat volutpat. Praesent urna nisi, fringila lorem et vehicula lacinia quam. Integer sollicitudin mauris nec lorem luctus ultrices.</p>
+                <p>Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. Mauris aliquet magna magna sed nunc rhoncus pharetra. Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero. Mauris aliquet magna magna sed nunc rhoncus amet feugiat tempus.</p>
+              </article>
+
+            <!-- About -->
+              <article id="game">
+
+              </article>
+          </div>
+
+        <!-- Footer -->
+          <footer id="footer">
+            <p class="copyright">Inspired by : <a href="https://html5up.net">HTML5 UP</a>.</p>
+          </footer>
+
+      </div>
+
+      <div id="bg"></div>
+    </div>
+
+  <!-- <div id="startMenu" class="menu">
+    <div id="gameTitle">Piano Hero</div>
+    <a href = "#" onclick="init()">PLAY</a>
+  </div> -->
+
 </body>
 
 <script>
-  'use strict';
+  function init() {
+    var startMenu = document.getElementById("startMenu")
+    startMenu.parentNode.removeChild(startMenu)
 
-  document.body.style.background = '#000'; 
+    'use strict';
 
-  var piano = Synth.createInstrument('piano');
+    var score = 0
 
-  // Set up plugins
+    document.body.style.background = '#000'; 
 
-  Leap.loop({background: true})
-    .use('transform', {
-      vr: 'desktop' // Switch to meters.
-    })
-    .use('boneHand', {
-      targetEl: document.body,
-      jointColor: new THREE.Color(0xffffff),
-      rendererOps: {antialias: true}
-    })
-    .use('proximity');
+    var piano = Synth.createInstrument('piano');
+
+    // Set up plugins
+
+    Leap.loop({background: true})
+      .use('transform', {
+        vr: 'desktop' // Switch to meters.
+      })
+      .use('boneHand', {
+        targetEl: document.body,
+        jointColor: new THREE.Color(0xffffff),
+        rendererOps: {antialias: true},
+        // scale: 0.1
+      })
+      .use('proximity');
 
 
-  // Set up scene
+    // Set up scene
 
-  var scene = Leap.loopController.plugins.boneHand.scene;
-  var camera = Leap.loopController.plugins.boneHand.camera;
-  var renderer = Leap.loopController.plugins.boneHand.renderer;
-  camera.position.set( 0.0, 0.5, 0.3 );
+    var scene = Leap.loopController.plugins.boneHand.scene;
+    var camera = Leap.loopController.plugins.boneHand.camera;
+    var renderer = Leap.loopController.plugins.boneHand.renderer;
+    camera.position.set( 0.0, 0.5, 0.3 );
 
-  var controls = new THREE.OrbitControls( camera );
+    var controls = new THREE.OrbitControls( camera );
 
-  // Add a plane
+    // Add a plane
 
-  var keys = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C']
-  var colors = [0x0080ff, 0xff1919, 0xFFFF00, 0x0080ff, 0x00FF00, 0x7D26CD]
-  var squares = []
-  var buttons = []
+    var piano_keys = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+    var colors = [0x0080ff, 0xff1919, 0xFFFF00, 0x0080ff, 0x00FF00, 0x7D26CD, 0xffffff, 0x000000]
+    var squares = []
+    var buttons = []
+    var pushedButton = []
+    var width = 0.05
+    var height = 0.05
 
-  for (var i = -2; i < 3; i++) {
-    buttons[i + 2] = createButton(0.09 * i, -0.08, keys[i + 2], 0.05, 0.05, colors[i+3]);
-  }
-
-  for (var i = -2; i < 3; i++) {
-    squares[i + 2] = createSquares(0.09 * i, 0.4, 0.05, 0.05, colors[i+3]);
-  }
-
-  var counter = 0
-
-  var interval = setInterval(function() {
-    for (var i = 0; i < squares.length; i++) {
-      squares[i].position.set(squares[i].position.x, squares[i].position.y, 0.4 - counter / 100);
-
-      if (squares[i].position.z < buttons[i].position.z) {
-        scene.remove(squares[i])
-        clearInterval(interval)
-      }
+    for (var i = 0; i < 6; i++) {
+      buttons[i] = createButton(i, 0.07 * (i - 3), -0.02, width, height, colors[i], piano_keys[i], 4);
     }
 
-    counter++
+    var size = width
 
-  }, 50);
+    var x = [-0.21, -0.14, -0.07, 0, 0.07, 0.14, 0.21]
 
-  function createButton(xPos, zPos, key, width, height, color) {
-    var planeGeo = new THREE.PlaneGeometry(width, width);
-    var material = new THREE.MeshPhongMaterial();
-    var buttonMesh = new THREE.Mesh(planeGeo, material.clone());
+    squares[0] = createSquares(4, x[4], 0.4, size, height, colors[4]); 
+    squares[1] = createSquares(3, x[3], 0.5, size, height, colors[3]); 
+    squares[2] = createSquares(2, x[2], 0.6, size, height, colors[2]); 
+    squares[3] = createSquares(0, x[0], 0.75, size, height, colors[0]);
 
-    buttonMesh.name = "rectangular button";
+    squares[4] = createSquares(4, x[4], 0.85, size, height, colors[4]);
+    squares[5] = createSquares(3, x[3], 0.95, size, height, colors[3]);
+    squares[6] = createSquares(2, x[2], 1.05, size, height, colors[2]);
+    squares[7] = createSquares(0, x[0], 1.2, size, height, colors[0]);
 
-    material.color.setHex(color);
+    squares[8] = createSquares(4, x[4], 1.3, size, height, colors[4]);
+    squares[9] = createSquares(3, x[3], 1.4, size, height, colors[3]);
+    squares[10] = createSquares(2, x[2], 1.5, size, height, colors[2]);
+    squares[11] = createSquares(0, x[0], 1.65, size, height, colors[0]);
 
-    var longThrow = -0.01;
-    var squareButton = new PushButton(
+    squares[12] = createSquares(5, x[5], 1.75, size, height, colors[5]);
+    squares[13] = createSquares(4, x[4], 1.85, size, height, colors[4]);
+    squares[14] = createSquares(5, x[5], 1.95, size, height, colors[5]);
+    squares[15] = createSquares(2, x[2], 2.1, size, height, colors[2]);
 
-      new InteractablePlane(buttonMesh, Leap.loopController),
+    squares[16] = createSquares(5, x[5], 2.2, size, height, colors[5]);
+    squares[17] = createSquares(3, x[3], 2.3, size, height, colors[3]);
+    squares[18] = createSquares(4, x[4], 2.4, size, height, colors[4]);
+    squares[19] = createSquares(5, x[5], 2.5, size, height, colors[5]);
 
-      {
-        locking: false,
-        longThrow: longThrow
-      }
+    squares[19] = createSquares(5, x[5], 2.6, size, height, colors[5]);
+    squares[20] = createSquares(3, x[3], 2.7, size, height, colors[3]);
+    squares[21] = createSquares(5, x[5], 2.8, size, height, colors[5]);
+    squares[22] = createSquares(3, x[3], 2.9, size, height, colors[3]);
 
-    ).on('press', function(mesh){
-      piano.play(key, 4, 2); // piano stuff
-      mesh.material.color.setHex(0xccccff);
+    squares[23] = createSquares(5, x[5], 3.0, size, height, colors[5]);
+    squares[24] = createSquares(3, x[3], 3.1, size, height, colors[3]);
+    squares[25] = createSquares(5, x[5], 3.2, size, height, colors[5]);
+    squares[26] = createSquares(3, x[3], 3.3, size, height, colors[3]);
+    squares[27] = createSquares(5, x[5], 3.4, size, height, colors[5]);
+    squares[28] = createSquares(3, x[3], 3.5, size, height, colors[3]);
+    squares[29] = createSquares(5, x[5], 3.5, size, height, colors[5]);
+    squares[30] = createSquares(4, x[4], 3.6, size, height, colors[4]);
 
-    }).on('release', function(mesh){
+    var key_counter = 0
 
-      mesh.material.color.setHex(color);
+    // Lux aeterna
 
-    });
+    var upperOctave = [12]
+    var keys = ['A#', 'A', 'G', 'D', 'A#', 'A', 'G', 'D', 'A#', 'A', 'G', 'D', 'C', 'A#', 'A', 'A#', 'A#', 'G', 'A#', 'G', 'A#', 'G', 'A#', 'G', 'A#', 'G', 'A#', 'G', 'A#', 'G', 'A#', 'A', 'A#', 'A', 'A#', 'A', 'A#', 'A', 'A#', 'A', 'A#', 'A', 'A#', 'A', 'A#', 'A', 'G', 'A#', 'A#', 'A#', 'A', 'A', 'A', 'G', 'A#', 'A#', 'A#', 'A', 'A', 'A', 'G', 'G', 'G', 'A', 'A', 'A#', 'A#'] // rightHand
+    var lowerOctave = []
 
-    squareButton.plane.hover(
-      function(mesh){ // over
-        mesh.material.color.setHex(0xffccff);
-      },
-      function(mesh){ // out
+    function interval() { 
+
+      setInterval(function() {
+        for (var i = 0; i < squares.length; i++) {
+
+          squares[i].position.set(squares[i].position.x, squares[i].position.y, squares[i].position.z - 0.01);
+
+          if (squares[i].position.z < buttons[squares[i].name].position.z && pushedButton[squares[i].name]) {
+            scene.remove(squares[i])
+          }
+        }
+      }, 100);
+    }
+
+    interval()
+  
+
+    // setTimeout(interval(), 5000)
+
+    function createButton(id, xPos, zPos, width, height, color, key, octave) {
+      var planeGeo = new THREE.PlaneGeometry(width, height);
+      var material = new THREE.MeshPhongMaterial();
+      var buttonMesh = new THREE.Mesh(planeGeo, material.clone());
+
+      buttonMesh.material.color.setHex(color);
+
+      pushedButton[id] = false
+
+      var longThrow = -0.01;
+      var squareButton = new PushButton(
+
+        new InteractablePlane(buttonMesh, Leap.loopController),
+
+        {
+          locking: false,
+          longThrow: longThrow
+        }
+
+      ).on('press', function(mesh){
+        mesh.material.color.setHex(0xccccff);
+        pushedButton[id] = true
+        if (upperOctave.includes(id)) {
+          piano.play(keys[key_counter++], 5, 2)
+        } else if (lowerOctave.includes(id)) {
+          piano.play(keys[key_counter++], 3, 2)
+        } else {
+          piano.play(keys[key_counter++], 4, 2)
+        }
+
+      }).on('release', function(mesh){
         mesh.material.color.setHex(color);
-      }
-    );
+      });
 
-    var base = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.01), new THREE.MeshPhongMaterial({color: color}));
-    base.position.set(xPos, 0.12, zPos);
-    base.rotateX(Math.PI * -0.5)
+      squareButton.plane.hover(
+        function(mesh){ // over
+          mesh.material.color.setHex(0xffccff);
+        },
+        function(mesh){ // out
+          pushedButton[id] = false
+          mesh.material.color.setHex(color);
+        }
+      );
 
-    squareButton.plane.resetPosition();
+      var base = new THREE.Mesh(new THREE.BoxGeometry(width, 0, 0.01), new THREE.MeshPhongMaterial({color: color}));
+      base.position.set(xPos, 0.12, zPos);
+      base.rotateX(Math.PI * -0.5)
 
-    base.add(buttonMesh);
+      buttonMesh.position.set(
+      0,
+      buttonMesh.geometry.parameters.height / 2,
+      -longThrow / 2
+      );
 
-    scene.add(base);
+      squareButton.plane.resetPosition();
 
-    return base
-  }
+      base.add(buttonMesh);
 
-  function createSquares(xPos, zPos, width, height, color) {
-    var planeGeo = new THREE.PlaneGeometry(width, width);
-    var material = new THREE.MeshPhongMaterial();
-    var buttonMesh = new THREE.Mesh(planeGeo, material.clone());
+      scene.add(base);
 
-    material.color.setHex(color);
+      base.name = id
 
-    var base = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.01), new THREE.MeshPhongMaterial({color: color}));
-    base.position.set(xPos, 0.12, zPos);
-    base.rotateX(Math.PI * -0.5)
+      return base
+    }
 
-    base.add(buttonMesh);
+    function createSquares(id, xPos, zPos, width, height, color) {
+      var planeGeo = new THREE.PlaneGeometry(width, width);
+      var material = new THREE.MeshPhongMaterial();
+      var buttonMesh = new THREE.Mesh(planeGeo, material.clone());
 
-    scene.add(base);
+      material.color.setHex(color);
 
-    return base
+      var base = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.01), new THREE.MeshPhongMaterial({color: color}));
+      base.position.set(xPos, 0.12, zPos);
+      base.rotateX(Math.PI * -0.5)
+
+      base.add(buttonMesh);
+
+      scene.add(base);
+
+      base.name = id
+
+      return base
+    }
   }
 
 
