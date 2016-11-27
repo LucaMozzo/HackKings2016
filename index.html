@@ -4,9 +4,7 @@
   <script src="lib/three.js"></script>
   <script src="lib/leap-0.6.4.js"></script>
   <script src="lib/leap-plugins-0.1.11pre.js"></script>
-
-  <script src="lib/leap-widgets-0.1.0.min.js"></script>
-
+  <script src="lib/leap-widgets-0.1.0.js"></script>
   <script src="lib/OrbitControls.js"></script>
   <script src="lib/audiosynth.js"></script>
 
@@ -17,6 +15,10 @@
 
 <script>
   'use strict';
+
+  document.body.style.background = '#000'; 
+
+  var piano = Synth.createInstrument('piano');
 
   // Set up plugins
 
@@ -37,29 +39,45 @@
   var scene = Leap.loopController.plugins.boneHand.scene;
   var camera = Leap.loopController.plugins.boneHand.camera;
   var renderer = Leap.loopController.plugins.boneHand.renderer;
-  camera.position.set( 0.0, 0.5, 1.0 );
+  camera.position.set( 0.0, 0.5, 0.3 );
 
   var controls = new THREE.OrbitControls( camera );
 
   // Add a plane
 
   var keys = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C']
+  var colors = [0x0080ff, 0xff1919, 0xFFFF00, 0x0080ff, 0x00FF00, 0x7D26CD]
+  var squares = []
+  var buttons = []
 
-  for (var i = -3; i < 4; i++) {
-    createButton(0.05 * i, i, keys[i + 3], 0.04, 0.2, 0xffffff, 0.12);
+  for (var i = -2; i < 3; i++) {
+    buttons[i + 2] = createButton(0.09 * i, -0.08, keys[i + 2], 0.05, 0.05, colors[i+3]);
   }
 
-  createButton(-1 * 0.075, -2, keys[0] + '#', 0.04, 0.12, 0x000000, 0.15);
-  createButton(-1.7 * 0.075, -2, keys[1] + '#', 0.04, 0.12, 0x000000, 0.15);
-  createButton(0.33 * 0.075, -2, keys[3] + '#', 0.04, 0.12, 0x000000, 0.15);
-  createButton(0.075, -2, keys[4] + '#', 0.04, 0.12, 0x000000, 0.15);
-  createButton(1.7 * 0.075, -2, keys[5] + '#', 0.04, 0.12, 0x000000, 0.15);
+  for (var i = -2; i < 3; i++) {
+    squares[i + 2] = createSquares(0.09 * i, 0.4, 0.05, 0.05, colors[i+3]);
+  }
 
-  function createButton(pos, id, key, width, height, color, yPos) {
+  var counter = 0
 
-    var planeGeo = new THREE.PlaneGeometry(width, height);
+  var interval = setInterval(function() {
+    for (var i = 0; i < squares.length; i++) {
+      squares[i].position.set(squares[i].position.x, squares[i].position.y, 0.4 - counter / 100);
+
+      if (squares[i].position.z < buttons[i].position.z) {
+        buttons[i] = null
+        clearInterval(interval)
+      }
+    }
+
+    counter++
+
+  }, 50);
+
+  function createButton(xPos, zPos, key, width, height, color) {
+    var planeGeo = new THREE.PlaneGeometry(width, width);
     var material = new THREE.MeshPhongMaterial();
-    var buttonMesh = new THREE.Mesh(planeGeo, material);
+    var buttonMesh = new THREE.Mesh(planeGeo, material.clone());
 
     buttonMesh.name = "rectangular button";
 
@@ -76,11 +94,8 @@
       }
 
     ).on('press', function(mesh){
-
-      var piano = Synth.createInstrument('piano');
       piano.play(key, 4, 2); // piano stuff
       mesh.material.color.setHex(0xccccff);
-      console.log(id)
 
     }).on('release', function(mesh){
 
@@ -97,42 +112,36 @@
       }
     );
 
-
-    var base = new THREE.Mesh(new THREE.BoxGeometry(0.04, longThrow, longThrow), new THREE.MeshPhongMaterial({color: 0x222222}));
-    base.position.set(pos, yPos, -0.1);
-    // base.position.set(0, 0.1, -0.2);
+    var base = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.01), new THREE.MeshPhongMaterial({color: color}));
+    base.position.set(xPos, 0.12, zPos);
     base.rotateX(Math.PI * -0.5)
-    // base.rotateY(Math.PI * 0.2);
-    base.rotateZ(Math.PI);
 
-    buttonMesh.position.set(
-      0,
-      buttonMesh.geometry.parameters.height / 2 - longThrow / 2,
-      -longThrow / 2
-    );
-    squareButton.plane.resetPosition(); // resets the original position, etc to the current one
-
-   // base.rotateX(Math.PI * -0.45);
-   // base.position.set(0.2,0,0.2);
+    squareButton.plane.resetPosition();
 
     base.add(buttonMesh);
 
     scene.add(base);
+
+    return base
   }
 
-  // createKey()
+  function createSquares(xPos, zPos, width, height, color) {
+    var planeGeo = new THREE.PlaneGeometry(width, width);
+    var material = new THREE.MeshPhongMaterial();
+    var buttonMesh = new THREE.Mesh(planeGeo, material.clone());
 
-  // function createKey(key, octave) {
-  //   var geometry = new THREE.BoxGeometry( 0.05, 0.10, 0.03 );
-  //   var material = new THREE.MeshBasicMaterial( { color: 0xeff3f7 } );
-  //   var cube = new THREE.Mesh( geometry, material );
+    material.color.setHex(color);
 
-  //   cube.position.set(0, 0.1, 0);
-  //   cube.rotateX(Math.PI * -0.5)
-  //   cube.rotateZ(Math.PI);
+    var base = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.01), new THREE.MeshPhongMaterial({color: color}));
+    base.position.set(xPos, 0.12, zPos);
+    base.rotateX(Math.PI * -0.5)
 
-  //   scene.add( cube );
-  // }
+    base.add(buttonMesh);
+
+    scene.add(base);
+
+    return base
+  }
 
 
 </script>
