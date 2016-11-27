@@ -65,7 +65,7 @@
       squares[i].position.set(squares[i].position.x, squares[i].position.y, 0.4 - counter / 100);
 
       if (squares[i].position.z < buttons[i].position.z) {
-        buttons[i] = null
+        scene.remove(squares[i])
         clearInterval(interval)
       }
     }
